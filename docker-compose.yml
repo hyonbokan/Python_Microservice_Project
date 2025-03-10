@@ -1,0 +1,49 @@
+version: "3.9"
+
+services:
+  gateway:
+    build: .
+    container_name: graphql_gateway
+    ports:
+      - "8000:8000"
+    depends_on:
+      - rabbitmq
+      - postgres
+      - redis
+    environment:
+      - DATABASE_URL=postgres://postgres:password@postgres:5432/market_data
+    restart: always
+
+  market_data:
+    build: .
+    container_name: market_data_service
+    depends_on:
+      - postgres
+      - redis
+    restart: always
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672" # Management UI
+    restart: always
+
+  postgres:
+    image: postgres:15
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: market_data
+    ports:
+      - "5432:5432"
+    restart: always
+
+  redis:
+    image: redis:latest
+    container_name: redis_cache
+    ports:
+      - "6379:6379"
+    restart: always
