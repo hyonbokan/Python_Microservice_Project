@@ -26,10 +26,15 @@ run-market:
 queue:
 	$(VENV)/bin/python backend/message_queue/rabbitmq_service.py
 
-# 6. Start all services (background mode)
-start-services: run-gateway run-market queue
+# 6. Run database migration
+migrate:
+	alembic upgrade head
 
-# 7. Clean project (removes venv)
+# 7. Generate a new migration
+new-migration:
+	alembic revision --autogenerate -m "New changes"
+
+# 8. Clean project
 clean:
 	rm -rf $(VENV)
 	@echo "Cleaned project: virtual environment removed."

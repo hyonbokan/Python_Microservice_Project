@@ -1,8 +1,12 @@
 import asyncio
 import json
-import requests
+import aiohttp
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from graphql import graphql_sync, build_schema
+import sys
+import os
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from utils.config import Config
 
 
@@ -17,25 +21,33 @@ graphql_schema = build_schema(
     """
 )
 
+# Async helper function to perform GET request
+async def async_fetch(url):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            data = await response.json()
+            return data.get("data", "No data available")
+
+
 def resolve_get_market_data():
     try:
-        response = requests.get(f"http://{Config.POSTGRES_HOST}:5000/market-data")
-        return response.json().get("data", "No data available")
-    except requests.exceptions.RequestException:
+        url = f"http://{Config.POSTGRES_HOST}:5000/market-data"
+        return asyncio.run(async_fetch(url))
+    except Exception as e:
         return "Market data service unavailable"
 
 def resolve_get_transaction_data():
     try:
-        response = requests.get(f"http://{Config.POSTGRES_HOST}:5001/transaction-data")
-        return response.json().get("data", "No data available")
-    except requests.exceptions.RequestException:
-        return "transaction service response"
-
+        url = f"http://{Config.POSTGRES_HOST}:5001/transaction-data"
+        return asyncio.run(async_fetch(url))
+    except Exception as e:
+        return "Transaction service unavailable"
+    
 def resolve_get_analytics_data():
     try:
-        response = requests.get(f"http://{Config.POSTGRES_HOST}:5002/analytics-data")
-        return response.json().get("data", "No data available")
-    except requests.exceptions.RequestException:
+        url = f"http://{Config.POSTGRES_HOST}:5002/analytics-data"
+        return asyncio.run(async_fetch(url))
+    except Exception as e:
         return "Analytics data service unavailable"
 
 
@@ -48,15 +60,19 @@ query_resolvers = {
 
 class GraphQLHandler(BaseHTTPRequestHandler):
     def do_POST(self):
-        content_length = int(self.headers['Content-Length'])
+        content_length = int(self.headers.get("Content-Length", 0))
         post_data = self.rfile.read(content_length)
-        request = json.load(post_data.decode('utf-8'))
+        try:
+            request = json.loads(post_data.decode("utf-8"))
+        except Exception:
+            self.send_response(400)
+            self.end_headers()
+            return
         
         query = request.get("query")
         variables = request.get("variables", {})
-        
         result = graphql_sync(
-            graphql_schema, query, root_value=query_resolvers, variables_values=variables
+            graphql_schema, query, root_value=query_resolvers, variable_values=variables
         )
         
         self.send_response(200)
