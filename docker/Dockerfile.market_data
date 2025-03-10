@@ -1,0 +1,19 @@
+FROM python:3.11
+
+WORKDIR /app
+
+# Set PYTHONPATH so Python can find utils
+ENV PYTHONPATH=/app
+
+# Copy dependencies and install
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the application code
+COPY . .
+
+# Expose Market Data Service port
+EXPOSE 5000
+
+# Run server
+CMD ["python", "market_data/market_data_service.py"]

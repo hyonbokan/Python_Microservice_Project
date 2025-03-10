@@ -1,8 +1,8 @@
-version: "3.9"
-
 services:
   gateway:
-    build: .
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.gateway
     container_name: graphql_gateway
     ports:
       - "8000:8000"
@@ -11,15 +11,19 @@ services:
       - postgres
       - redis
     environment:
-      - DATABASE_URL=postgres://postgres:password@postgres:5432/market_data
+      - DATABASE_URL=postgresql://microservice_user:password123@postgres:5432/microservice_db
     restart: always
 
   market_data:
-    build: .
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.market_data
     container_name: market_data_service
     depends_on:
       - postgres
       - redis
+    ports:
+      - "5001:5000"
     restart: always
 
   rabbitmq:
@@ -27,7 +31,7 @@ services:
     container_name: rabbitmq
     ports:
       - "5672:5672"
-      - "15672:15672" # Management UI
+      - "15672:15672"
     restart: always
 
   postgres:
