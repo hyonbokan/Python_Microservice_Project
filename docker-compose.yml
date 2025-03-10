@@ -10,8 +10,8 @@ services:
       - rabbitmq
       - postgres
       - redis
-    environment:
-      - DATABASE_URL=postgresql://microservice_user:password123@postgres:5432/microservice_db
+    env_file:
+      - .env
     restart: always
 
   market_data:
@@ -24,6 +24,8 @@ services:
       - redis
     ports:
       - "5001:5000"
+    env_file:
+      - .env
     restart: always
 
   rabbitmq:
@@ -38,11 +40,13 @@ services:
     image: postgres:15
     container_name: postgres_db
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: market_data
+      POSTGRES_USER: microservice_user
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: microservice_db
     ports:
       - "5432:5432"
+    env_file:
+      - .env
     restart: always
 
   redis:
