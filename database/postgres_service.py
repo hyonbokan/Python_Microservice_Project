@@ -19,7 +19,7 @@ class PostgreSQLService(DatabaseService):
                 records = result.scalars().all()
                 
                 data = [
-                    dict(id=record.id, market=record.market, price=record.price, timestamp=record.timestamp)
+                    dict(id=record.id, market=record.market, price=record.price, timestamp=record.timestamp.isoformat())
                     for record in records
                 ]
                 

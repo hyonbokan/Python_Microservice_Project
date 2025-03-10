@@ -13,7 +13,7 @@ class RedisCacheService(CacheService):
         )
         
     def save(self, key, value, expiry=60):
-        self.client.setex(key, expiry, json.dumps(value))
+        self.client.setex(key, expiry, json.dumps(value, default=str))
     
     def get(self, key):
         data = self.client.get(key)
