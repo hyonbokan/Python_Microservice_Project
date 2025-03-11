@@ -1,7 +1,7 @@
 from utils.interfaces import DatabaseService, CacheService
 from sqlalchemy.future import select
-from sqlalchemy.ext.asyncio import AsyncSession
-from database.models import SessionLocal, TradeData
+from database.models.models_trade_data import TradeData
+from database.models.base import SessionLocal
 
 class PostgreSQLService(DatabaseService):
     def __init__(self, cache: CacheService):
