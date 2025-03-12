@@ -25,7 +25,21 @@ services:
       - postgres
       - redis
     ports:
-      - "5001:5000"
+      - "5001:5001"
+    env_file:
+      - .env
+    restart: always
+
+  transactions:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.transactions
+    container_name: transactions_service
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "5002:5002"
     env_file:
       - .env
     restart: always

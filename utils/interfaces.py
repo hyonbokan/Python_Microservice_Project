@@ -13,7 +13,7 @@ class CacheService(ABC):
         pass
 
 
-class DatabaseService(ABC):
+class MarketDatabaseService(ABC):
     @classmethod
     @abstractmethod
     async def fetch_trade_data(self):
@@ -23,6 +23,20 @@ class DatabaseService(ABC):
     @abstractmethod
     async def save_trade_data(self, market, price, timestamp):
         pass
+
+
+class TransactionDatabaseService(ABC):
+    @classmethod
+    @abstractmethod
+    async def fetch_transaction_data(self):
+        pass
+    
+    
+    @classmethod
+    @abstractmethod
+    async def save_transaction_data(self, order_id, product, quantity, price, status, timestamp):
+        pass
+    
     
 class MessageQueueService(ABC):
     @classmethod
