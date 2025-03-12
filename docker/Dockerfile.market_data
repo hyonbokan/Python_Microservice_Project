@@ -16,4 +16,4 @@ COPY . .
 EXPOSE 5000
 
 # Run server
-CMD ["python", "market_data/market_data_service.py"]
+CMD ["python", "market_data/run_market_data_service.py"]

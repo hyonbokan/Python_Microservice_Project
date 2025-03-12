@@ -1,29 +1,10 @@
-import sys
-import os
+from utils.interfaces import DatabaseService, CacheService
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-import asyncio
-from aiohttp import web
-from database.postgres_service import PostgreSQLService
-from cache.redis_cache import RedisCacheService
-
-async def market_data_handler(request):
-    # Dependency injection
-    cache = RedisCacheService()
-    db_service = PostgreSQLService(cache=cache)
+class MarketDataService:
+    def __init__(self, cache: CacheService, database: DatabaseService):
+        self.cache = cache
+        self.database = database
     
-    # Fetch trade data asynchronously
-    data = await db_service.fetch_trade_data()
-    response_data = {"data": data}
-    return web.json_response(response_data)
-
-async def init_app():
-    app = web.Application()
-    # Route for the market data endpoint
-    app.router.add_get('/market-data', market_data_handler)
-    return app
-
-if __name__ == "__main__":
-    app = asyncio.run(init_app())
-    # Run the aiohttp server on host 0.0.0.0 and port 5000
-    web.run_app(app, host='0.0.0.0', port=5000)
+    async def get_market_data(self):
+        data = await self.database.fetch_trade_data()
+        return data

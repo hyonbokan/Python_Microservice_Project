@@ -1,6 +1,6 @@
 from utils.interfaces import DatabaseService, CacheService
 from sqlalchemy.future import select
-from database.models.models_trade_data import TradeData
+from database.models.models_market_data import MarketData
 from database.models.base import SessionLocal
 
 class PostgreSQLService(DatabaseService):
@@ -14,7 +14,7 @@ class PostgreSQLService(DatabaseService):
         
         async with SessionLocal() as session:
             async with session.begin():
-                stmt = select(TradeData).order_by(TradeData.timestamp.desc()).limit(10)
+                stmt = select(MarketData).order_by(MarketData.timestamp.desc()).limit(10)
                 result = await session.execute(stmt)
                 records = result.scalars().all()
                 
@@ -29,5 +29,5 @@ class PostgreSQLService(DatabaseService):
     async def save_trade_data(self, market, price, timestamp):
         async with SessionLocal() as session:
             async with session.begin():
-                trade = TradeData(market=market, price=price, timestamp=timestamp)
+                trade = MarketData(market=market, price=price, timestamp=timestamp)
                 session.add(trade)
