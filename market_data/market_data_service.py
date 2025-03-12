@@ -1,7 +1,7 @@
-from utils.interfaces import DatabaseService, CacheService
+from utils.interfaces import MarketDatabaseService, CacheService
 
 class MarketDataService:
-    def __init__(self, cache: CacheService, database: DatabaseService):
+    def __init__(self, cache: CacheService, database: MarketDatabaseService):
         self.cache = cache
         self.database = database
     

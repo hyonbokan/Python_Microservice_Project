@@ -1,9 +1,9 @@
-from utils.interfaces import DatabaseService, CacheService
+from utils.interfaces import MarketDatabaseService, CacheService
 from sqlalchemy.future import select
 from database.models.models_market_data import MarketData
 from database.models.base import SessionLocal
 
-class PostgreSQLService(DatabaseService):
+class PostgreSQLMarketService(MarketDatabaseService):
     def __init__(self, cache: CacheService):
         self.cache = cache
     

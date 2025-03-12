@@ -4,12 +4,12 @@ import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import asyncio
 from aiohttp import web
-from database.postgres_service import PostgreSQLService
+from database.market_postgres_service import PostgreSQLMarketService
 from cache.redis_cache import RedisCacheService
 from market_data_service import MarketDataService
 
 cache = RedisCacheService()
-database = PostgreSQLService(cache=cache)
+database = PostgreSQLMarketService(cache=cache)
 market_service = MarketDataService(cache=cache, database=database)
 
 async def market_data_handler(request):
@@ -24,4 +24,4 @@ async def init_app():
 
 if __name__ == "__main__":
     app = asyncio.run(init_app())
-    web.run_app(app, host="0.0.0.0", port=5000)
+    web.run_app(app, host="0.0.0.0", port=5001)
