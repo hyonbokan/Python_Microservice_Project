@@ -3,9 +3,11 @@ from aiohttp import web
 from datetime import datetime, timezone
 from database.transactions_postgres_service import PostgreSQLTransactionService
 from transaction_service import TransactionService
+from message_queue.rabbitmq_service import RabbitMQService
 
 database = PostgreSQLTransactionService()
-transaction_service = TransactionService(database=database)
+publisher = RabbitMQService()
+transaction_service = TransactionService(database=database, publisher=publisher)
 
 async def get_transaction_data(request):
     data = await transaction_service.get_transaction_data()
